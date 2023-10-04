@@ -1,23 +1,24 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.request.model;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
-public class ItemDto {
+public class ItemRequest {
     private Long id;
-    @NotBlank
-    @Size(max = 32)
-    private String name;
     @NotBlank
     @Size(max = 256)
     private String description;
     @NotNull
-    private Boolean available;
-    private Long request;
+    private User requestor;
+    @PastOrPresent
+    private LocalDateTime created;
 }
