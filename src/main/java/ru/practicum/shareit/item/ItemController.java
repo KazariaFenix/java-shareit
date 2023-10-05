@@ -16,14 +16,14 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public Item postItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemDto postItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.addItem(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public Item patchItem(@RequestBody Item item, @RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto patchItem(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId,
                           @PathVariable long itemId) {
-        return itemService.updateItem(item, userId, itemId);
+        return itemService.updateItem(itemDto, userId, itemId);
     }
 
     @GetMapping("/{itemId}")

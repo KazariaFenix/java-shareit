@@ -10,12 +10,13 @@ import java.util.*;
 @Repository
 public class UserRepositoryImpl implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
+    private final Set<String> emailist = new HashSet<>();
     private Long id = 1L;
 
     @Override
     public User addUser(User user) {
         if (users.containsKey(user.getId())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Пользователь с таким айди уже существует");
         }
         validationEmail(user.getEmail());
         user = user.toBuilder()
@@ -28,12 +29,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User updateUser(User user) {
         if (!users.containsKey(user.getId())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Пользователь с таким айди не существует");
         }
         User oldUser = users.get(user.getId());
 
         if (!oldUser.getEmail().equals(user.getEmail()) && user.getEmail() != null) {
             validationEmail(user.getEmail());
+            emailist.remove(oldUser.getEmail());
             oldUser = oldUser.toBuilder()
                     .email(user.getEmail())
                     .build();
@@ -51,15 +53,16 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void deleteUserById(long userId) {
         if (!users.containsKey(userId)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Пользователь с таким айди не существует");
         }
+        emailist.remove(users.get(userId).getEmail());
         users.remove(userId);
     }
 
     @Override
     public User getUserById(long userId) {
         if (!users.containsKey(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден");
         }
         return users.get(userId);
     }
@@ -70,10 +73,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private void validationEmail(String email) {
-        for (User user : users.values()) {
-            if (user.getEmail().equals(email)) {
-                throw new IllegalArgumentException();
-            }
+        if (!addEmail(email)) {
+            throw new IllegalArgumentException("Пользователь с такой почтой уже существует");
         }
+    }
+
+    private boolean addEmail(String email) {
+        return emailist.add(email);
     }
 }

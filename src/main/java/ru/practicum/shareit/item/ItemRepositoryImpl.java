@@ -4,33 +4,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
 
-    private final UserRepository userRepository;
     private final Map<Long, Item> items = new HashMap<>();
     private Long id = 1L;
 
     @Override
-    public Item addItem(ItemDto itemDto, long userId) {
-        userRepository.getUserById(userId);
-
-        itemDto = itemDto.toBuilder()
+    public Item addItem(Item item) {
+        item = item.toBuilder()
                 .id(id++)
                 .build();
-        Item item = ItemMapper.toItem(itemDto, userId);
 
         items.put(item.getId(), item);
         return item;
@@ -38,7 +28,6 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item updateItem(Item item, long userId, long itemId) {
-        userRepository.getUserById(userId);
         if (items.get(itemId) == null || items.get(itemId).getOwner() != userId) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Or Item Not Found");
         }
@@ -58,11 +47,11 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public ItemDto getItemById(long itemId) {
+    public Item getItemById(long itemId) {
         if (items.get(itemId) == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Товар с таким айди не существует");
         }
-        return ItemMapper.toItemDto(items.get(itemId));
+        return items.get(itemId);
     }
 
     @Override
@@ -73,15 +62,15 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<ItemDto> getItemsSearch(String text) {
-        List<ItemDto> searchItems = new ArrayList<>();
+    public List<Item> getItemsSearch(String text) {
+        List<Item> searchItems = new ArrayList<>();
         if (text.equals("null")) {
             return searchItems;
         }
         for (Item item : items.values()) {
             if ((item.getName().toLowerCase().contains(text.toLowerCase()) ||
                     item.getDescription().toUpperCase().contains(text.toUpperCase())) && item.getAvailable()) {
-                searchItems.add(ItemMapper.toItemDto(item));
+                searchItems.add(item);
             }
         }
         return searchItems;
