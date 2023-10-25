@@ -12,19 +12,16 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findBookingsByBookerIdAndEndTimeBefore
-            (long bookerId, LocalDateTime localDateTime);//PAST
+    List<Booking> findBookingsByBookerIdAndEndTimeBefore(long bookerId, LocalDateTime localDateTime);//PAST
 
-    List<Booking> findBookingsByBookerIdAndStartTimeAfter
-            (long bookerId, LocalDateTime localDateTime);//FUTURE
+    List<Booking> findBookingsByBookerIdAndStartTimeAfter(long bookerId, LocalDateTime localDateTime);//FUTURE
 
     List<Booking> findBookingsByBookerIdAndStatusEquals(long bookerId, StatusBooking statusBooking);//WAITING and REJECTION
 
     List<Booking> findBookingsByBookerId(long bookerId);
 
     @Query("SELECT b FROM Booking AS b WHERE b.startTime < ?1 AND b.endTime > ?1 AND b.booker = ?2")
-    List<Booking> findBookingsByBookerAndCurrent
-            (LocalDateTime localDateTime, User booker);//CURRENT
+    List<Booking> findBookingsByBookerAndCurrent(LocalDateTime localDateTime, User booker);//CURRENT
 
     List<Booking> getBookingsByItem(Item item);
 }

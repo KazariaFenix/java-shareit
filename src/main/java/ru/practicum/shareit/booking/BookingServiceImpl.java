@@ -76,6 +76,7 @@ public class BookingServiceImpl implements BookingService {
                     .status(StatusBooking.REJECTED)
                     .build();
         }
+
         return BookingDtoMapper.toBookingDto(bookingRepository.save(booking));
     }
 
@@ -88,6 +89,7 @@ public class BookingServiceImpl implements BookingService {
                 booking.getBooker().getId() != userId) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Is Not Booker Or Owner");
         }
+
         return BookingDtoMapper.toBookingDto(booking);
     }
 
@@ -99,16 +101,13 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> list;
         switch (state) {
             case CURRENT:
-                list = bookingRepository.findBookingsByBookerAndCurrent
-                        (LocalDateTime.now(), booker);
+                list = bookingRepository.findBookingsByBookerAndCurrent(LocalDateTime.now(), booker);
                 break;
             case PAST:
-                list = bookingRepository.findBookingsByBookerIdAndEndTimeBefore
-                        (userId, LocalDateTime.now());
+                list = bookingRepository.findBookingsByBookerIdAndEndTimeBefore(userId, LocalDateTime.now());
                 break;
             case FUTURE:
-                list = bookingRepository.findBookingsByBookerIdAndStartTimeAfter
-                        (userId, LocalDateTime.now());
+                list = bookingRepository.findBookingsByBookerIdAndStartTimeAfter(userId, LocalDateTime.now());
                 break;
             case REJECTED:
                 list = bookingRepository.findBookingsByBookerIdAndStatusEquals(userId, StatusBooking.REJECTED);
@@ -123,6 +122,7 @@ public class BookingServiceImpl implements BookingService {
                 state = State.UNSUPPORTED_STATUS;
                 throw new UnsupportedStatusException("Unknown state: " + state);
         }
+
         return list.stream()
                 .map(BookingDtoMapper::toBookingDto)
                 .sorted(Comparator.comparing(BookingDto::getStart).reversed())
@@ -175,6 +175,7 @@ public class BookingServiceImpl implements BookingService {
                 state = State.UNSUPPORTED_STATUS;
                 throw new UnsupportedStatusException("Unknown state: " + state);
         }
+
         return list.stream()
                 .map(BookingDtoMapper::toBookingDto)
                 .sorted(Comparator.comparing(BookingDto::getStart).reversed())
