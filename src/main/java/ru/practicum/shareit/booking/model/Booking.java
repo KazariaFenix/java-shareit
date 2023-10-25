@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Table(name = "booking")
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +31,7 @@ public class Booking {
     @JoinColumn(nullable = false)
     private Item item;
     @ManyToOne
-    @JoinColumn(name = "booker", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "booker_id", referencedColumnName = "id", nullable = false)
     private User booker;
     @Enumerated(EnumType.STRING)
     private StatusBooking status;
