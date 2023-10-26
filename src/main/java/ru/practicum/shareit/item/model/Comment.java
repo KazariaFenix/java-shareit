@@ -27,7 +27,7 @@ public class Comment {
     @JoinColumn(nullable = false)
     private Item item;
     @OneToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
     @Column(nullable = false)
     private LocalDateTime created;

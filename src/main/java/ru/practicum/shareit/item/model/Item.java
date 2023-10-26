@@ -4,12 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.util.List;
 
 @Data
 @Entity
@@ -21,7 +18,6 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     @Column(nullable = false, length = 128)
     private String name;
     @Column(nullable = false, length = 1024)
@@ -29,8 +25,6 @@ public class Item {
     @Column(nullable = false)
     private Boolean available;
     @ManyToOne
-    @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
-    @OneToMany
-    private List<ItemRequest> request;//заглушка
 }

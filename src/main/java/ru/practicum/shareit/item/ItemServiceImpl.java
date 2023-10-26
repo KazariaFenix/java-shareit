@@ -36,8 +36,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemShort addItem(ItemShort itemShort, long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "User Not Found"));
-
         Item item = ItemShortMapper.toItem(itemShort, user);
+
         return ItemShortMapper.toItemShort(itemRepository.save(item));
     }
 
