@@ -87,11 +87,17 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemDto> getItems(long userId) {
         List<Item> itemsOwner = itemRepository.findItemsByOwnerId(userId);
+        List<Comment> itemsComments = commentRepository.findCommentsByItems(itemsOwner);
+        List<Booking> itemsBookings = bookingRepository.findBookingsByItems(itemsOwner);
         List<ItemDto> itemWithBooking = new ArrayList<>();
 
         for (Item item : itemsOwner) {
-            List<Comment> itemComments = commentRepository.findCommentsByItem(item);
-            List<Booking> itemBookings = bookingRepository.getBookingsByItem(item);
+            List<Comment> itemComments = itemsComments.stream()
+                    .filter(comment -> comment.getItem().equals(item))
+                    .collect(Collectors.toList());
+            List<Booking> itemBookings = itemsBookings.stream()
+                    .filter(booking -> booking.getItem().equals(item))
+                    .collect(Collectors.toList());
             ItemDto itemDto = ItemDtoMapper.toItemWithBookingDto(item,
                     itemBookings, itemComments, userId);
 
@@ -130,8 +136,8 @@ public class ItemServiceImpl implements ItemService {
         }
         comment = comment.toBuilder()
                 .created(LocalDateTime.now())
-                .user(userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "User Not Found")))
+                .user(userRepository.findById(userId).orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found")))
                 .item(item)
                 .build();
 

@@ -24,4 +24,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findBookingsByBookerAndCurrent(LocalDateTime localDateTime, User booker);//CURRENT
 
     List<Booking> getBookingsByItem(Item item);
+
+    @Query("SELECT b FROM Booking AS b WHERE b.item IN ?1")
+    List<Booking> findBookingsByItems(List<Item> items);
 }
